@@ -14,7 +14,7 @@ for col_name in data.columns:
         except AttributeError:
             continue
 
-buyers_list = data['Buyer'].unique()
+buyers_list = list(data['Buyer'].unique())
 geo_list = data['Geo'].unique()
 info_geo = {}
 for geo in geo_list:
@@ -35,13 +35,14 @@ for buyer in buyers_list:
                 data[(data.Geo == geo) & (data.Buyer == buyer)]['Revenue_in_app30d'].sum()
 
         click_per_imp = round((clicks/impressions) * 100, 2)
-        cost_per_click = round(spend/clicks, 2)
+        try:
+            cost_per_click = round(spend/clicks)
+        except ValueError:
+            cost_per_click = 0
         instal_procent = round((installs/impressions) * 100, 2)
         reg_per_imp = round((registration/impressions)*100, 2)
-        return_on_investment = round((incum/spend)*100, 2)
+        if spend == 0:
+            return_on_investment = '-'
+        else:
+            return_on_investment = incum-spend
         info_geo[geo][buyer] = {'CPI': click_per_imp, 'CPC': cost_per_click, 'IP': instal_procent, 'RPI': reg_per_imp, 'RI': return_on_investment}
-
-
-# TODO СДЕЛАТЬ СРАВНИТЕЛЬНЫЕ ГРАФИКИ ПО РЕГИОНАМ
-# TODO СДЕЛАТЬ СРАВНИТЕЛЬНЫЕ ГРАФИКИ ПО СРЕДНИМ ПОКАЗАТЕЛЯМ
-
